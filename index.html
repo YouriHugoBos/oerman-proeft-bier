@@ -59,8 +59,12 @@
       <p class="oer">DRINK. RAAD. GROM.</p>
     </header>
     <div class="panel center">
-      <p class="lead">Hoe heet jij, oer-mens?</p>
-      <input id="player-name" class="big-input" type="text" maxlength="20" placeholder="OEG, GRONK, ...">
+      <p class="lead">Kies jouw oer-kop!</p>
+      <div id="char-grid" class="char-grid"></div>
+      <details class="char-other">
+        <summary>… of tik eigen oer-naam</summary>
+        <input id="player-name" class="big-input" type="text" maxlength="20" placeholder="OEG, GRONK, ...">
+      </details>
       <p class="hint" id="join-count"></p>
       <button id="start-play" class="btn btn-big">🍺 START PROEVEN →</button>
     </div>
@@ -119,6 +123,7 @@
       <p class="oer" id="end-name"></p>
     </header>
     <div class="panel center">
+      <img id="end-avatar" class="end-avatar hidden" alt="">
       <div id="end-score" class="bigscore"></div>
       <p class="hint">Leg telefoon op tafel. Vergelijk met stam. 🦣</p>
       <button id="share-wa" class="btn btn-big">📲 POCH OP WHATSAPP</button>
