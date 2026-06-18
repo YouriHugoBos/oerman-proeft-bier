@@ -306,8 +306,8 @@ function buildOptButtons(container, options, selected, onPick){
 function buildRating(container, value, onPick){
   container.innerHTML='';
   for(let i=1;i<=5;i++){
-    const c=el('button','knots'+(i<=value?' on':''), '🏏');
-    c.title = i+' knots'+(i>1?'en':'');
+    const c=el('button','knots'+(i<=value?' on':''), '🦴');
+    c.title = i+' bot'+(i>1?'ten':'');
     c.addEventListener('click', ()=>{
       const nv = (value===i) ? 0 : i;   // nogmaals op dezelfde = wissen
       onPick(nv);
