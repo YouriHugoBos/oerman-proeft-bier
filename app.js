@@ -155,6 +155,78 @@ $('#beer-list').addEventListener('click', e=>{
 });
 $('#add-beer').addEventListener('click', ()=>{ setupBeers.push(blankBeer()); renderSetup(); window.scrollTo(0,document.body.scrollHeight); });
 
+// ── Import vanuit ChatGPT-JSON ─────────────────────────────
+function normType(s){
+  if(!s) return TYPES[0];
+  const x = String(s).toLowerCase().trim();
+  let hit = TYPES.find(t=>t.toLowerCase()===x);
+  if(hit) return hit;
+  hit = TYPES.find(t=>{const tl=t.toLowerCase(); return tl.includes(x)||x.includes(tl);});
+  if(hit) return hit;
+  const syn = {weizen:'Weizen',weiss:'Weizen',witbier:'Witbier',wit:'Witbier',tripel:'Tripel',tripple:'Tripel',triple:'Tripel',dubbel:'Dubbel',double:'Dubbel',quad:'Quadrupel/Bok',quadru:'Quadrupel/Bok',bok:'Quadrupel/Bok',stout:'Stout/Porter',porter:'Stout/Porter',lager:'Pils',pils:'Pils',blond:'Blond',ipa:'IPA',neipa:'IPA',sour:'Sour',gose:'Sour',lambic:'Sour',saison:'Saison'};
+  for(const k in syn){ if(x.includes(k)) return syn[k]; }
+  return TYPES[0];
+}
+function normColor(s){
+  const x = String(s||'').toLowerCase();
+  if(/donker|dark|bruin|zwart|black|brown/.test(x)) return 'donker';
+  if(/licht|light|geel|goud|gold|blond|pale|stro|straw/.test(x)) return 'licht';
+  return 'amber';
+}
+function normHazy(v){
+  if(v===true||v===1) return true;
+  if(v===false||v===0||v==null||v==='') return false;
+  const x = String(v).toLowerCase().trim();
+  return ['true','ja','1','hazy','troebel','yes','nevelig'].includes(x);
+}
+function normAbv(v){
+  if(v==null||v==='') return '';
+  const n = parseFloat(String(v).replace(',','.').replace('%',''));
+  return isNaN(n) ? '' : n;
+}
+function parseImport(raw){
+  let txt = raw.trim().replace(/^```(?:json)?/i,'').replace(/```$/,'').trim();
+  let data = JSON.parse(txt);
+  if(!Array.isArray(data)) data = data.beers||data.biertjes||data.bieren||data.b;
+  if(!Array.isArray(data)) throw new Error('geen lijst');
+  return data.map(o=>({
+    n: String(o.naam ?? o.name ?? o.n ?? '').trim(),
+    t: normType(o.soort ?? o.type ?? o.t),
+    h: normHazy(o.hazy ?? o.troebel ?? o.h),
+    c: normColor(o.kleur ?? o.color ?? o.c),
+    a: normAbv(o.alcohol ?? o.abv ?? o.alc ?? o.percentage ?? o.a),
+  }));
+}
+
+const LLM_PROMPT =
+`Ik organiseer een blinde biertasting. Ik geef je hieronder een lijst bier-namen. Geef PER bier de gegevens terug als JSON-array — alleen de JSON, geen uitleg eromheen. Gebruik exact deze velden en waarden:
+- "naam": de biernaam
+- "soort": precies één van: ${TYPES.join(', ')}
+- "hazy": true of false (is het bier troebel/nevelig?)
+- "kleur": precies één van: licht, amber, donker
+- "alcohol": alcoholpercentage als getal, bijv. 8.0
+Weet je iets niet zeker? Geef je beste inschatting. Mijn bieren:
+`;
+
+$('#import-toggle').addEventListener('click', ()=> $('#import-box').classList.toggle('hidden'));
+$('#copy-prompt').addEventListener('click', async ()=>{
+  try{ await navigator.clipboard.writeText(LLM_PROMPT); toast('Prompt gekopieerd! Plak in ChatGPT + zet je biernamen eronder.'); }
+  catch{ toast('Kopiëren mislukt — selecteer de prompt handmatig.'); }
+});
+$('#import-apply').addEventListener('click', ()=>{
+  const raw = $('#import-text').value;
+  if(!raw.trim()){ toast('Plak eerst het JSON-antwoord.'); return; }
+  let beers;
+  try{ beers = parseImport(raw).filter(b=>b.n); }
+  catch(e){ toast('JSON niet te lezen — plak het hele antwoord van ChatGPT.'); return; }
+  if(!beers.length){ toast('Geen biertjes met naam gevonden.'); return; }
+  setupBeers = beers;
+  renderSetup();
+  $('#import-box').classList.add('hidden');
+  $('#import-text').value='';
+  toast(`${beers.length} biertje(s) ingevuld — check ze even na!`);
+});
+
 $('#make-qr').addEventListener('click', ()=>{
   // validatie
   const bad = setupBeers.findIndex(b=>!b.n.trim());

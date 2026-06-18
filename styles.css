@@ -79,6 +79,18 @@ body{
 .btn-big{background:var(--red);color:#fff;}
 .btn-ghost{background:#fff;color:var(--black);}
 
+/* ── import box ── */
+#import-box{
+  background:#fff;border:3px dashed var(--black);border-radius:12px;
+  padding:12px;margin:2px 0 14px;
+}
+#import-text{
+  width:100%;min-height:120px;margin-top:10px;
+  font-family:'Courier New',monospace;font-size:13px;font-weight:bold;
+  border:2px solid var(--black);border-radius:8px;padding:9px;
+  background:#fff8e6;color:var(--ink);resize:vertical;
+}
+
 /* ── setup beer cards ── */
 .beer-card{
   background:#fff;

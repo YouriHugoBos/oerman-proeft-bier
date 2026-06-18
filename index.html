@@ -22,6 +22,14 @@
       <p class="lead">Jij = <b>baas van vuur</b> (spelleider). Tik drankjes in. Stam raadt. 🔥</p>
       <p class="hint">Jij speelt niet mee — jij weet alle antwoorden al. Nummer de glazen 1, 2, 3…</p>
 
+      <button id="import-toggle" class="btn btn-ghost">🤖 PLAK LIJST UIT CHATGPT</button>
+      <div id="import-box" class="hidden">
+        <p class="hint">1. Druk op de knop hieronder, plak de prompt in ChatGPT en stuur je bier-namen mee. 2. Plak het JSON-antwoord hier en druk op VUL IN.</p>
+        <button id="copy-prompt" class="btn btn-ghost">📄 KOPIEER PROMPT VOOR CHATGPT</button>
+        <textarea id="import-text" placeholder='Plak hier de JSON, bijv:&#10;[{"naam":"La Chouffe","soort":"Tripel","hazy":false,"kleur":"amber","alcohol":8.0}]'></textarea>
+        <button id="import-apply" class="btn btn-big">✅ VUL IN</button>
+      </div>
+
       <div id="beer-list"></div>
 
       <button id="add-beer" class="btn btn-ghost">➕ NIEUW DRANK</button>
