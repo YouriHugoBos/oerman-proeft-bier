@@ -19,11 +19,11 @@ Let op: jij kent als spelleider alle antwoorden, dus speel zelf niet mee. Nummer
 | Veld | Punten |
 |---|---|
 | Soort goed | 2 |
-| Troebel (hazy) goed | 1 |
-| Kleur goed | 1 |
+| Hazy goed | 1 |
+| Smaakprofiel goed (fris/fruitig/moutig/bitter) | 1 |
 | Alcohol% binnen ±0,5% | 2 (±1,0% → 1) |
 | Naam goed (soepele match) | 5 |
-| Lekker? 👍 | niet-scorend (groeps-favoriet) |
+| Oordeel (1–5 🏏 knotsen) | niet-scorend (hoogst beoordeelde = groeps-favoriet ⭐) |
 
 ## Publiceren op GitHub Pages
 Deze bestanden horen in de **root** van het repo `oerman-proeft-bier` te staan (niet in een submap):

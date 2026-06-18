@@ -4,13 +4,14 @@
 */
 
 // ── Constants ──────────────────────────────────────────────
-const TYPES = ['Pils','Witbier','IPA','Tripel','Dubbel','Blond','Stout/Porter','Saison','Weizen','Sour','Quadrupel/Bok'];
-const COLORS = [
-  {v:'licht', label:'☀️ LICHT'},
-  {v:'amber', label:'🍯 AMBER'},
-  {v:'donker',label:'🌑 DONKER'},
+const TYPES = ['Pils','Witbier','IPA','Tripel','Dubbel','Blond','Weizen','Quadrupel/Bok'];
+const SMAAK = [
+  {v:'fris',    label:'🌊 FRIS'},
+  {v:'fruitig', label:'🍓 FRUITIG'},
+  {v:'moutig',  label:'🍞 MOUTIG'},
+  {v:'bitter',  label:'🌿 BITTER'},
 ];
-const PTS = { type:2, hazy:1, color:1, abvFull:2, abvHalf:1, name:5 };
+const PTS = { type:2, hazy:1, smaak:1, abvFull:2, abvHalf:1, name:5 };
 
 // ── DOM helpers ────────────────────────────────────────────
 const $  = (s,el=document)=>el.querySelector(s);
@@ -62,8 +63,8 @@ function nameCorrect(guess, actual){
 
 // ── Scoring ────────────────────────────────────────────────
 function scoreBeer(answer, key){
-  // answer & key: {t,h,c,a,n}
-  const r = {type:0,hazy:0,color:0,abv:0,name:0,details:[]};
+  // answer & key: {t,h,s,a,n}
+  const r = {type:0,hazy:0,smaak:0,abv:0,name:0,details:[]};
   // soort
   const typeOk = answer.t!=null && answer.t===key.t;
   r.type = typeOk?PTS.type:0;
@@ -71,11 +72,11 @@ function scoreBeer(answer, key){
   // hazy
   const hazyOk = answer.h!=null && Boolean(answer.h)===Boolean(key.h);
   r.hazy = hazyOk?PTS.hazy:0;
-  r.details.push({k:'Troebel', ok:hazyOk, you:answer.h==null?'—':(answer.h?'ja':'nee'), truth:key.h?'ja':'nee', pts:r.hazy});
-  // color
-  const colorOk = answer.c!=null && answer.c===key.c;
-  r.color = colorOk?PTS.color:0;
-  r.details.push({k:'Kleur', ok:colorOk, you:answer.c??'—', truth:key.c, pts:r.color});
+  r.details.push({k:'Hazy', ok:hazyOk, you:answer.h==null?'—':(answer.h?'ja':'nee'), truth:key.h?'ja':'nee', pts:r.hazy});
+  // smaakprofiel
+  const smaakOk = answer.s!=null && answer.s===key.s;
+  r.smaak = smaakOk?PTS.smaak:0;
+  r.details.push({k:'Smaak', ok:smaakOk, you:answer.s??'—', truth:key.s, pts:r.smaak});
   // abv
   let abvPts=0, abvOk=false;
   if(answer.a!=null && answer.a!=='' && key.a!=null){
@@ -90,14 +91,14 @@ function scoreBeer(answer, key){
   r.name = nameOk?PTS.name:0;
   r.details.push({k:'Naam', ok:nameOk, you:answer.n||'—', truth:key.n, pts:r.name, bonus:true});
 
-  r.total = r.type+r.hazy+r.color+r.abv+r.name;
+  r.total = r.type+r.hazy+r.smaak+r.abv+r.name;
   return r;
 }
 
 /* ════════════════════ SETUP MODE ════════════════════ */
 let setupBeers = [];
 
-function blankBeer(){ return {n:'', t:TYPES[0], h:false, c:'amber', a:''}; }
+function blankBeer(){ return {n:'', t:TYPES[0], h:false, s:'fris', a:''}; }
 
 function renderSetup(){
   const list = $('#beer-list');
@@ -123,15 +124,15 @@ function renderSetup(){
       </div>
       <div class="field-row">
         <div class="field">
-          <label>Troebel?</label>
+          <label>Hazy?</label>
           <select data-f="h" data-i="${i}">
             <option value="0" ${!b.h?'selected':''}>Nee (helder)</option>
             <option value="1" ${b.h?'selected':''}>Ja (hazy)</option>
           </select>
         </div>
         <div class="field">
-          <label>Kleur</label>
-          <select data-f="c" data-i="${i}">${COLORS.map(c=>`<option value="${c.v}" ${c.v===b.c?'selected':''}>${c.label.replace(/^\S+\s/,'')}</option>`).join('')}</select>
+          <label>Smaakprofiel</label>
+          <select data-f="s" data-i="${i}">${SMAAK.map(c=>`<option value="${c.v}" ${c.v===b.s?'selected':''}>${c.label.replace(/^\S+\s/,'')}</option>`).join('')}</select>
         </div>
       </div>`;
     list.appendChild(card);
@@ -163,15 +164,17 @@ function normType(s){
   if(hit) return hit;
   hit = TYPES.find(t=>{const tl=t.toLowerCase(); return tl.includes(x)||x.includes(tl);});
   if(hit) return hit;
-  const syn = {weizen:'Weizen',weiss:'Weizen',witbier:'Witbier',wit:'Witbier',tripel:'Tripel',tripple:'Tripel',triple:'Tripel',dubbel:'Dubbel',double:'Dubbel',quad:'Quadrupel/Bok',quadru:'Quadrupel/Bok',bok:'Quadrupel/Bok',stout:'Stout/Porter',porter:'Stout/Porter',lager:'Pils',pils:'Pils',blond:'Blond',ipa:'IPA',neipa:'IPA',sour:'Sour',gose:'Sour',lambic:'Sour',saison:'Saison'};
+  // synoniemen; verwijderde soorten remappen we naar de dichtstbijzijnde overgebleven soort
+  const syn = {weizen:'Weizen',weiss:'Weizen',witbier:'Witbier',wit:'Witbier',tripel:'Tripel',tripple:'Tripel',triple:'Tripel',dubbel:'Dubbel',double:'Dubbel',quad:'Quadrupel/Bok',quadru:'Quadrupel/Bok',bok:'Quadrupel/Bok',lager:'Pils',pils:'Pils',blond:'Blond',ipa:'IPA',neipa:'IPA',stout:'Dubbel',porter:'Dubbel',sour:'Witbier',gose:'Witbier',lambic:'Witbier',saison:'Blond'};
   for(const k in syn){ if(x.includes(k)) return syn[k]; }
   return TYPES[0];
 }
-function normColor(s){
+function normSmaak(s){
   const x = String(s||'').toLowerCase();
-  if(/donker|dark|bruin|zwart|black|brown/.test(x)) return 'donker';
-  if(/licht|light|geel|goud|gold|blond|pale|stro|straw/.test(x)) return 'licht';
-  return 'amber';
+  if(/bitter|hoppig|hop\b|hops|stevig/.test(x)) return 'bitter';
+  if(/mout|malt|zoet|sweet|karamel|caramel|toffee|chocola|choc|roost|roast|nooter/.test(x)) return 'moutig';
+  if(/fruit|banaan|banana|citrus|sinaasappel|orange|tropisch|tropical|berry|bes|kers|cherry/.test(x)) return 'fruitig';
+  return 'fris';
 }
 function normHazy(v){
   if(v===true||v===1) return true;
@@ -193,7 +196,7 @@ function parseImport(raw){
     n: String(o.naam ?? o.name ?? o.n ?? '').trim(),
     t: normType(o.soort ?? o.type ?? o.t),
     h: normHazy(o.hazy ?? o.troebel ?? o.h),
-    c: normColor(o.kleur ?? o.color ?? o.c),
+    s: normSmaak(o.smaakprofiel ?? o.smaak ?? o.profiel ?? o.profile ?? o.taste ?? o.s),
     a: normAbv(o.alcohol ?? o.abv ?? o.alc ?? o.percentage ?? o.a),
   }));
 }
@@ -203,7 +206,7 @@ const LLM_PROMPT =
 - "naam": de biernaam
 - "soort": precies één van: ${TYPES.join(', ')}
 - "hazy": true of false (is het bier troebel/nevelig?)
-- "kleur": precies één van: licht, amber, donker
+- "smaakprofiel": precies één van: ${SMAAK.map(s=>s.v).join(', ')}
 - "alcohol": alcoholpercentage als getal, bijv. 8.0
 Weet je iets niet zeker? Geef je beste inschatting. Mijn bieren:
 `;
@@ -231,7 +234,7 @@ $('#make-qr').addEventListener('click', ()=>{
   // validatie
   const bad = setupBeers.findIndex(b=>!b.n.trim());
   if(bad>=0){ toast(`Drank ${bad+1} heeft geen naam. Naam = de bonusvraag!`); return; }
-  const cfg = { b: setupBeers.map(b=>({n:b.n.trim(), t:b.t, h:b.h?1:0, c:b.c, a:b.a===''?null:parseFloat(b.a)})) };
+  const cfg = { b: setupBeers.map(b=>({n:b.n.trim(), t:b.t, h:b.h?1:0, s:b.s, a:b.a===''?null:parseFloat(b.a)})) };
   const url = buildShareUrl(cfg);
   renderQR(url, cfg.b.length);
   show('screen-share');
@@ -274,7 +277,7 @@ function initPlay(cfg){
   if(saved){ player=saved.player; cur=saved.cur||0;
     if(saved.finished){ renderEnd(); show('screen-end'); return; }
   } else {
-    player = {name:'', answers: KEY.map(()=>({t:null,h:null,c:null,a:'',n:'',l:null}))};
+    player = {name:'', answers: KEY.map(()=>({t:null,h:null,s:null,a:'',n:'',r:0}))};
   }
   $('#join-count').textContent = `${KEY.length} drank${KEY.length===1?'':'jes'} te proeven. Veel grom! 🦣`;
   if(player.name){ $('#player-name').value=player.name; }
@@ -300,6 +303,21 @@ function buildOptButtons(container, options, selected, onPick){
   });
 }
 
+function buildRating(container, value, onPick){
+  container.innerHTML='';
+  for(let i=1;i<=5;i++){
+    const c=el('button','knots'+(i<=value?' on':''), '🏏');
+    c.title = i+' knots'+(i>1?'en':'');
+    c.addEventListener('click', ()=>{
+      const nv = (value===i) ? 0 : i;   // nogmaals op dezelfde = wissen
+      onPick(nv);
+      value = nv;
+      $$('.knots',container).forEach((k,idx)=>k.classList.toggle('on', idx<nv));
+    });
+    container.appendChild(c);
+  }
+}
+
 function renderBeer(){
   const a = player.answers[cur];
   $('#play-beer-title').textContent = `🍺 DRANK ${cur+1}`;
@@ -307,8 +325,8 @@ function renderBeer(){
 
   buildOptButtons($('#q-type'), TYPES.map(t=>({v:t,label:t})), a.t, v=>{a.t=v;save();});
   buildOptButtons($('#q-hazy'), [{v:true,label:'💧 JA'},{v:false,label:'🔍 NEE'}], a.h, v=>{a.h=v;save();});
-  buildOptButtons($('#q-color'), COLORS, a.c, v=>{a.c=v;save();});
-  buildOptButtons($('#q-lekker'), [{v:true,label:'👍 JA'},{v:false,label:'👎 NEE'}], a.l, v=>{a.l=v;save();});
+  buildOptButtons($('#q-smaak'), SMAAK, a.s, v=>{a.s=v;save();});
+  buildRating($('#q-rating'), a.r, v=>{a.r=v;save();});
 
   $('#q-abv').value = a.a;
   $('#q-name').value = a.n;
@@ -332,7 +350,8 @@ function renderEnd(){
   let total=0, favIdx=-1;
   const results = KEY.map((k,i)=>{ const r=scoreBeer(player.answers[i],k); total+=r.total; return r; });
   // favoriet
-  player.answers.forEach((a,i)=>{ if(a.l===true && favIdx<0) favIdx=i; });
+  let favRating=0;
+  player.answers.forEach((a,i)=>{ if((a.r||0)>favRating){ favRating=a.r; favIdx=i; } });
 
   $('#end-score').innerHTML = `${total}<small>grom-punten</small>`;
 
@@ -344,7 +363,7 @@ function renderEnd(){
         <span>${d.k}${d.bonus?' 🦴':''}: <i>${escapeAttr(String(d.you))}</i></span>
         <span class="${d.ok?'ok':'no'}">${d.ok?'✅ +'+d.pts:'❌'}</span>
       </div>`).join('');
-    const reveal = `<div class="bd-reveal">Juist: <b>${escapeAttr(KEY[i].n)}</b> — ${KEY[i].t}, ${KEY[i].h?'hazy':'helder'}, ${KEY[i].c}${KEY[i].a!=null?', '+KEY[i].a+'%':''}</div>`;
+    const reveal = `<div class="bd-reveal">Juist: <b>${escapeAttr(KEY[i].n)}</b> — ${KEY[i].t}, ${KEY[i].h?'hazy':'helder'}, ${KEY[i].s}${KEY[i].a!=null?', '+KEY[i].a+'%':''}</div>`;
     card.innerHTML = `
       <div class="bd-head"><b>🍺 Drank ${i+1}${i===favIdx?' ⭐':''}</b><span class="bd-pts">${r.total} pt</span></div>
       <div class="bd-body">${rows}${reveal}</div>`;
