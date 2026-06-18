@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#ffcc00">
+<title>Caveman Beer Tasting</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div id="app">
+
+  <!-- ══════════════ SETUP (spelleider) ══════════════ -->
+  <section id="screen-setup" class="screen">
+    <header class="topbar">
+      <h1>🦣 CAVEMAN<br>BEER TASTING</h1>
+      <p class="oer">DRINK. RAAD. GROM.</p>
+    </header>
+
+    <div class="panel">
+      <p class="lead">Jij = <b>baas van vuur</b> (spelleider). Tik drankjes in. Stam raadt. 🔥</p>
+      <p class="hint">Jij speelt niet mee — jij weet alle antwoorden al. Nummer de glazen 1, 2, 3…</p>
+
+      <div id="beer-list"></div>
+
+      <button id="add-beer" class="btn btn-ghost">➕ NIEUW DRANK</button>
+      <button id="make-qr" class="btn btn-big">🪨 MAAK QR-STEEN →</button>
+    </div>
+  </section>
+
+  <!-- ══════════════ SHARE / QR ══════════════ -->
+  <section id="screen-share" class="screen hidden">
+    <header class="topbar">
+      <h1>🪨 SCAN STEEN</h1>
+      <p class="oer">STAM, KIJK HIER. SCAN MET OOG-DOOS.</p>
+    </header>
+    <div class="panel center">
+      <div id="qrbox"></div>
+      <p class="hint" id="qr-count"></p>
+      <p class="hint">Iedereen scant deze code met telefoon-camera. Jij houdt scherm vast.</p>
+      <button id="copy-link" class="btn btn-ghost">🔗 KOPIEER LINK (nood)</button>
+      <button id="back-setup" class="btn btn-ghost">← TERUG, PAS AAN</button>
+    </div>
+  </section>
+
+  <!-- ══════════════ JOIN (speler) ══════════════ -->
+  <section id="screen-join" class="screen hidden">
+    <header class="topbar">
+      <h1>🦣 CAVEMAN<br>BEER TASTING</h1>
+      <p class="oer">DRINK. RAAD. GROM.</p>
+    </header>
+    <div class="panel center">
+      <p class="lead">Hoe heet jij, oer-mens?</p>
+      <input id="player-name" class="big-input" type="text" maxlength="20" placeholder="OEG, GRONK, ...">
+      <p class="hint" id="join-count"></p>
+      <button id="start-play" class="btn btn-big">🍺 START PROEVEN →</button>
+    </div>
+  </section>
+
+  <!-- ══════════════ PLAY ══════════════ -->
+  <section id="screen-play" class="screen hidden">
+    <div class="play-progress"><div id="play-bar"></div></div>
+    <header class="topbar small">
+      <h1 id="play-beer-title">🍺 DRANK 1</h1>
+      <p class="oer">PROEF. DENK. TIK.</p>
+    </header>
+
+    <div class="panel">
+      <div class="q">
+        <label>WELK SOORT DRANK?</label>
+        <div id="q-type" class="optgrid"></div>
+      </div>
+
+      <div class="q">
+        <label>TROEBEL? (hazy)</label>
+        <div id="q-hazy" class="optrow"></div>
+      </div>
+
+      <div class="q">
+        <label>WELKE KLEUR?</label>
+        <div id="q-color" class="optrow"></div>
+      </div>
+
+      <div class="q">
+        <label>HOE HARD SLAAT DRANK? (alcohol %)</label>
+        <input id="q-abv" class="big-input" type="number" inputmode="decimal" step="0.1" min="0" max="20" placeholder="bijv. 8.0">
+      </div>
+
+      <div class="q">
+        <label>NAAM VAN DRANK? <span class="bonus">+5 BONUS 🦴</span></label>
+        <input id="q-name" class="big-input" type="text" maxlength="40" placeholder="weet je 't? tik het!">
+      </div>
+
+      <div class="q">
+        <label>LEKKER? <span class="hint inline">(telt niet, puur eer)</span></label>
+        <div id="q-lekker" class="optrow"></div>
+      </div>
+
+      <div class="navrow">
+        <button id="prev-beer" class="btn btn-ghost">← VORIG</button>
+        <button id="next-beer" class="btn btn-big">VOLGEND →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════ END ══════════════ -->
+  <section id="screen-end" class="screen hidden">
+    <header class="topbar">
+      <h1>🏆 GROM-PUNTEN</h1>
+      <p class="oer" id="end-name"></p>
+    </header>
+    <div class="panel center">
+      <div id="end-score" class="bigscore"></div>
+      <p class="hint">Leg telefoon op tafel. Vergelijk met stam. 🦣</p>
+      <button id="share-wa" class="btn btn-big">📲 POCH OP WHATSAPP</button>
+      <div id="end-breakdown" class="breakdown"></div>
+    </div>
+  </section>
+
+</div>
+
+<div id="toast" class="toast hidden"></div>
+
+<script src="qrcode.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

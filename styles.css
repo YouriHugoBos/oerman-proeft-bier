@@ -1,0 +1,174 @@
+/* ══════════════ CAVEMAN BEER TASTING ══════════════ */
+:root{
+  --yellow:#ffcc00;
+  --yellow-d:#e6a700;
+  --black:#1a1407;
+  --red:#e8332a;
+  --cream:#fff4d6;
+  --ink:#1a1407;
+  --shadow:4px 4px 0 var(--black);
+}
+
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+
+html,body{background:var(--yellow);}
+body{
+  font-family:'Arial Black','Arial',sans-serif;
+  color:var(--ink);
+  min-height:100dvh;
+  background:
+    radial-gradient(circle at 20% 10%, #ffd84d 0 18%, transparent 18%),
+    radial-gradient(circle at 85% 80%, #ffd84d 0 14%, transparent 14%),
+    var(--yellow);
+  -webkit-text-size-adjust:100%;
+}
+
+#app{max-width:520px;margin:0 auto;padding:16px 16px 48px;}
+
+.screen{animation:pop .25s ease;}
+.hidden{display:none !important;}
+@keyframes pop{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+
+/* ── header ── */
+.topbar{text-align:center;margin:14px 0 18px;}
+.topbar.small{margin:6px 0 12px;}
+.topbar h1{
+  font-size:clamp(30px,9vw,46px);
+  line-height:.95;
+  letter-spacing:-1px;
+  text-transform:uppercase;
+  color:var(--black);
+  text-shadow:3px 3px 0 var(--red);
+  transform:rotate(-2deg);
+}
+.topbar.small h1{font-size:clamp(24px,7vw,34px);text-shadow:2px 2px 0 var(--red);}
+.oer{
+  display:inline-block;margin-top:8px;
+  background:var(--black);color:var(--yellow);
+  font-size:13px;letter-spacing:2px;padding:5px 12px;
+  transform:rotate(-1deg);
+}
+
+/* ── panel ── */
+.panel{
+  background:var(--cream);
+  border:4px solid var(--black);
+  box-shadow:var(--shadow);
+  border-radius:14px;
+  padding:18px 16px;
+}
+.panel.center{text-align:center;}
+.lead{font-size:18px;line-height:1.2;margin-bottom:10px;}
+.hint{font-family:Arial,sans-serif;font-weight:bold;font-size:13px;color:#6b5a2e;line-height:1.35;margin:8px 0;}
+.hint.inline{display:inline;font-size:12px;}
+
+/* ── buttons ── */
+.btn{
+  display:block;width:100%;
+  font-family:'Arial Black',sans-serif;
+  font-size:18px;text-transform:uppercase;letter-spacing:1px;
+  border:4px solid var(--black);
+  border-radius:12px;
+  padding:15px 14px;
+  margin-top:12px;
+  cursor:pointer;
+  box-shadow:var(--shadow);
+  transition:transform .05s, box-shadow .05s;
+}
+.btn:active{transform:translate(4px,4px);box-shadow:0 0 0 var(--black);}
+.btn-big{background:var(--red);color:#fff;}
+.btn-ghost{background:#fff;color:var(--black);}
+
+/* ── setup beer cards ── */
+.beer-card{
+  background:#fff;
+  border:3px solid var(--black);
+  border-radius:12px;
+  padding:12px;
+  margin-bottom:12px;
+  position:relative;
+}
+.beer-card h3{font-size:16px;text-transform:uppercase;margin-bottom:10px;color:var(--red);}
+.beer-card .del{
+  position:absolute;top:8px;right:8px;
+  background:var(--black);color:#fff;border:none;
+  width:30px;height:30px;border-radius:8px;font-size:16px;cursor:pointer;
+}
+.field{margin-bottom:10px;}
+.field label{display:block;font-family:Arial,sans-serif;font-weight:bold;font-size:12px;text-transform:uppercase;color:#6b5a2e;margin-bottom:4px;}
+.field input,.field select{
+  width:100%;font-family:Arial,sans-serif;font-weight:bold;font-size:16px;
+  border:2px solid var(--black);border-radius:8px;padding:9px;background:#fff;color:var(--ink);
+}
+.field-row{display:flex;gap:8px;}
+.field-row .field{flex:1;}
+
+/* ── play question blocks ── */
+.q{margin-bottom:18px;}
+.q>label{
+  display:block;font-size:15px;text-transform:uppercase;
+  margin-bottom:9px;letter-spacing:.5px;
+}
+.bonus{background:var(--red);color:#fff;font-size:11px;padding:2px 7px;border-radius:6px;vertical-align:middle;}
+
+.big-input{
+  width:100%;font-family:'Arial Black',sans-serif;font-size:20px;text-align:center;
+  border:4px solid var(--black);border-radius:12px;padding:13px;background:#fff;color:var(--ink);
+}
+.big-input::placeholder{color:#bbada0;font-size:16px;}
+
+/* option buttons (type/hazy/color/lekker) */
+.optgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.optrow{display:flex;gap:8px;flex-wrap:wrap;}
+.optrow .opt{flex:1;min-width:64px;}
+.opt{
+  font-family:'Arial Black',sans-serif;font-size:14px;text-transform:uppercase;
+  border:3px solid var(--black);border-radius:10px;background:#fff;color:var(--black);
+  padding:12px 6px;cursor:pointer;text-align:center;line-height:1.1;
+  transition:transform .05s;
+}
+.opt:active{transform:scale(.96);}
+.opt.sel{background:var(--red);color:#fff;box-shadow:inset 0 0 0 2px #fff;}
+
+/* ── nav ── */
+.navrow{display:flex;gap:10px;margin-top:8px;}
+.navrow .btn{margin-top:0;}
+#prev-beer{flex:0 0 38%;}
+#next-beer{flex:1;}
+
+.play-progress{height:14px;background:var(--cream);border:3px solid var(--black);border-radius:10px;overflow:hidden;margin-bottom:6px;}
+#play-bar{height:100%;background:var(--red);width:0;transition:width .25s;}
+
+/* ── QR ── */
+#qrbox{
+  display:inline-block;background:#fff;padding:14px;border:4px solid var(--black);
+  border-radius:14px;box-shadow:var(--shadow);margin:6px 0 14px;
+}
+#qrbox img,#qrbox canvas{display:block;}
+
+/* ── end ── */
+.bigscore{
+  font-size:84px;line-height:1;color:var(--red);text-shadow:4px 4px 0 var(--black);
+  margin:6px 0 4px;transform:rotate(-2deg);
+}
+.bigscore small{display:block;font-size:18px;color:var(--black);text-shadow:none;text-transform:uppercase;letter-spacing:2px;}
+.breakdown{text-align:left;margin-top:18px;}
+.bd-beer{border:3px solid var(--black);border-radius:10px;background:#fff;margin-bottom:10px;overflow:hidden;}
+.bd-head{display:flex;justify-content:space-between;align-items:center;padding:11px 12px;background:var(--yellow);cursor:pointer;}
+.bd-head b{font-size:15px;text-transform:uppercase;}
+.bd-pts{background:var(--black);color:var(--yellow);padding:3px 9px;border-radius:7px;font-size:14px;}
+.bd-body{padding:10px 12px;font-family:Arial,sans-serif;font-weight:bold;font-size:13px;display:none;}
+.bd-body.open{display:block;}
+.bd-row{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px dashed #d9c89a;}
+.bd-row:last-child{border:none;}
+.bd-row .ok{color:#1c9e4a;}
+.bd-row .no{color:var(--red);}
+.bd-reveal{margin-top:6px;font-size:12px;color:#6b5a2e;}
+
+/* ── toast ── */
+.toast{
+  position:fixed;left:50%;bottom:26px;transform:translateX(-50%);
+  background:var(--black);color:var(--yellow);font-family:Arial,sans-serif;font-weight:bold;
+  padding:12px 18px;border-radius:10px;font-size:14px;z-index:50;box-shadow:var(--shadow);
+  max-width:90%;text-align:center;
+}
