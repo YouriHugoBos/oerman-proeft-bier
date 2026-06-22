@@ -13,18 +13,6 @@ const SMAAK = [
 ];
 const PTS = { type:2, hazy:1, smaak:1, abvFull:2, abvHalf:1, name:5 };
 
-// Oer-koppen: tik op je gezicht om mee te doen. Voeg toe door een foto in
-// /characters te zetten en hier een regel {f, n} bij te schrijven.
-const CHARACTERS = [
-  {f:'characters/bosman.png',       n:'BOSMAN'},
-  {f:'characters/brum-meh-man.png', n:'BRUM-MEH-MAN'},
-  {f:'characters/jewjew.png',       n:'JEWJEW'},
-  {f:'characters/lieblieb.png',     n:'LIEBLIEB'},
-  {f:'characters/luideman.png',     n:'LUIDEMAN'},
-  {f:"characters/siee-man.png",     n:"SIEE'MAN"},
-  {f:"characters/tomu-tommuh.png",  n:"TOMU'TOMMUH"},
-];
-
 // ── DOM helpers ────────────────────────────────────────────
 const $  = (s,el=document)=>el.querySelector(s);
 const $$ = (s,el=document)=>[...el.querySelectorAll(s)];
@@ -289,47 +277,20 @@ function initPlay(cfg){
   if(saved){ player=saved.player; cur=saved.cur||0;
     if(saved.finished){ renderEnd(); show('screen-end'); return; }
   } else {
-    player = {name:'', avatar:null, answers: KEY.map(()=>({t:null,h:null,s:null,a:'',n:'',r:0}))};
+    player = {name:'', answers: KEY.map(()=>({t:null,h:null,s:null,a:'',n:'',r:0}))};
   }
   $('#join-count').textContent = `${KEY.length} drank${KEY.length===1?'':'jes'} te proeven. Veel grom! 🦣`;
-  renderCharacters();
-  if(player.name && !player.avatar){ $('#player-name').value=player.name; $('.char-other').open=true; }
+  if(player.name){ $('#player-name').value=player.name; }
   show('screen-join');
-}
-
-let selectedChar = null;   // {f, n} of null bij eigen naam
-function renderCharacters(){
-  const grid = $('#char-grid');
-  if(!CHARACTERS.length){ grid.classList.add('hidden'); return; }
-  grid.innerHTML='';
-  selectedChar = player.avatar ? CHARACTERS.find(c=>c.f===player.avatar)||null : null;
-  CHARACTERS.forEach(c=>{
-    const card = el('button','char'+(selectedChar&&selectedChar.f===c.f?' sel':''));
-    card.innerHTML = `<img src="${c.f}" alt="${c.n}" loading="lazy"><span>${c.n}</span>`;
-    card.addEventListener('click', ()=>{
-      selectedChar = c;
-      $('#player-name').value='';
-      $$('.char',grid).forEach(x=>x.classList.remove('sel'));
-      card.classList.add('sel');
-    });
-    grid.appendChild(card);
-  });
 }
 
 function loadSaved(){ try{ return JSON.parse(localStorage.getItem(storeKey)); }catch{ return null; } }
 function save(extra={}){ try{ localStorage.setItem(storeKey, JSON.stringify({player,cur,...extra})); }catch{} }
 
-$('#player-name').addEventListener('input', ()=>{
-  if($('#player-name').value.trim()){ selectedChar=null; $$('.char',$('#char-grid')).forEach(x=>x.classList.remove('sel')); }
-});
-
 $('#start-play').addEventListener('click', ()=>{
-  const typed = $('#player-name').value.trim();
-  const name = selectedChar ? selectedChar.n : typed;
-  if(!name){ toast('Kies een oer-kop of tik je naam!'); return; }
-  player.name = name;
-  player.avatar = selectedChar ? selectedChar.f : null;
-  save();
+  const n=$('#player-name').value.trim();
+  if(!n){ toast('Tik eerst jouw oer-naam!'); return; }
+  player.name=n; save();
   cur=0; renderBeer(); show('screen-play');
 });
 
@@ -386,9 +347,6 @@ $('#next-beer').addEventListener('click', ()=>{
 /* ════════════════════ END SCREEN ════════════════════ */
 function renderEnd(){
   $('#end-name').textContent = player.name + ', GROM!';
-  const av = $('#end-avatar');
-  if(player.avatar){ av.src = player.avatar; av.classList.remove('hidden'); }
-  else { av.classList.add('hidden'); }
   let total=0, favIdx=-1;
   const results = KEY.map((k,i)=>{ const r=scoreBeer(player.answers[i],k); total+=r.total; return r; });
   // favoriet
